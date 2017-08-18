@@ -197,11 +197,24 @@ quizing
                     //console.log(userData.email);
                     $state.go("app.welcome");
                 }).catch(function(error) {
-                    console.error("Authentication failed:", error);
+                    quiz.signInPassword = "";
+                    switch (error.code) {
+                        case "auth/invalid-email":
+                            alert("Please Enter correct Email.")
+
+                            break;
+                        case "auth/wrong-password":
+                            alert("INCORRECT Password,");
+                            break;
+
+                        default:
+                            alert(error.message);
+                            break;
+                    }
                 });
         }
         quiz.logout = function() {
-            console.log('hie')
+
             firebase.auth().signOut().then(function() {
                 $state.go("login")
                 alert("logged Out");
@@ -232,7 +245,7 @@ quizing
         }
 
     })
-    .controller("welcomeCtrl", function(userData, $state) {
+    .controller("welcomeCtrl", function(userData, $state, $firebaseAuth) {
 
         this.displayName = userData.userName;
         this.imageURL = userData.img;
@@ -372,10 +385,7 @@ quizing
         end.genre = $stateParams.genre;
         var userref = firebase.database().ref("Users");
         var users = $firebaseArray(userref);
-        users.$loaded()
-            .then(function(users) {
-                console.log(users);
-            })
+
         end.gameSelect = function() {
             $state.go('app.gameHome');
         }
